@@ -9,6 +9,7 @@ const createUserValid = (req, res, next) => {
     const userEmail = userService.search({ email });
     const userPhoneNumber = userService.search({ phoneNumber });
     if (userEmail || userPhoneNumber) {
+      res.status(400);
       throw new Error(`This user with an email or phone number already exist.`);
     }
 
@@ -42,12 +43,17 @@ const updateUserValid = (req, res, next) => {
 
   try {
     const user = userService.search({ id });
-    if (id !== user?.id) {
-      throw new Error(`User with id ${id} does not exist.`);
+    if (!user) {
+      res.status(404).send("User does not exist.");
     }
 
     if (!Object.keys(req.body).length) {
       throw new Error("No fields to update.");
+    }
+
+    const userFound = userService.search(req.body.email);
+    if (!userFound) {
+      throw new Error(`User already exists`);
     }
 
     const requestedKeys = Object.keys(req.body);
@@ -63,6 +69,7 @@ const updateUserValid = (req, res, next) => {
     }
 
     isValid(req.body);
+    res.status(200);
     res.data = { ...req.body };
     next();
   } catch (err) {

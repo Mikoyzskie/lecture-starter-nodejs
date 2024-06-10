@@ -36,6 +36,7 @@ router.get(
       res.data = userService.search({ id });
 
       if (!res.data) {
+        res.status(404);
         throw new Error("user not found");
       }
 
@@ -64,7 +65,7 @@ router.post(
         phoneNumber,
         password,
       });
-      res.status(201);
+      res.status(200);
     } catch (err) {
       res.err = err;
       res.status(400);
@@ -81,8 +82,16 @@ router.put(
   (req, res, next) => {
     const { id } = req.params;
 
+    const user = userService.search({ id });
+
+    if (!user) {
+      res.status(404);
+      throw new Error("user not found");
+    }
+
     try {
       res.data = userService.updateUser(id, req.body);
+
       res.status(200);
     } catch (err) {
       res.err = err;

@@ -1,4 +1,5 @@
 import { FIGHTER } from "../models/fighter.js";
+import { fighterService } from "../services/fighterService.js";
 
 const createFighterValid = (req, res, next) => {
   // TODO: Implement validatior for FIGHTER entity during creation
@@ -41,10 +42,17 @@ const updateFighterValid = (req, res, next) => {
   try {
     const fighter = fighterService.getOneFighter({ id });
     if (id !== fighter?.id) {
+      res.status(404);
       throw new Error(`This fighter id ${id} was not found.`);
     }
 
+    const fighterFound = fighterService.getOneFighter(req.body.name);
+    if (req.body.name === fighterFound?.name) {
+      throw new Error(`Fighter already exists`);
+    }
+
     if (!Object.keys(req.body).length) {
+      res.status(400);
       throw new Error("No fields to update.");
     }
 

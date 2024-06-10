@@ -31,6 +31,12 @@ router.get(
 
     try {
       res.data = fighterService.getOneFighter({ id });
+
+      if (!res.data) {
+        res.status(404);
+        throw new Error("fighter not found");
+      }
+
       res.status(200);
     } catch (err) {
       res.err = err;
@@ -53,9 +59,9 @@ router.post(
         name,
         power,
         defense,
-        health: 100,
+        health: 85,
       });
-      res.status(201);
+      res.status(200);
     } catch (err) {
       res.err = err;
       res.status(400);
